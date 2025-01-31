@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.glow-shadow {
+  box-shadow: 0 10px 30px -15px rgba(74, 144, 226, 0.3);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
