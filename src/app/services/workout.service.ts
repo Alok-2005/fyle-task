@@ -32,7 +32,15 @@ export class WorkoutService {
         { type: 'Swimming', minutes: 60, date: new Date('2024-01-30') },
         { type: 'Running', minutes: 20, date: new Date('2024-01-30') }
       ]
-    }
+    },
+    {
+      id: 3,
+      name: 'Mike Johnson',
+      workouts: [
+        { type: 'Yoga', minutes: 50, date: new Date('2024-01-30') },
+        { type: 'Cycling', minutes: 40, date: new Date('2024-01-30') }
+      ]
+    },
   ];
 
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
