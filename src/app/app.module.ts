@@ -11,6 +11,8 @@ import { AppComponent } from './app.component';
 import { WorkoutFormComponent } from './components/workout-form/workout-form.component';
 import { WorkoutListComponent } from './components/workout-list/workout-list.component';
 import { WorkoutService } from './services/workout.service';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { WorkoutService } from './services/workout.service';
     MatPaginatorModule,
     MatInputModule,
     MatFormFieldModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatSnackBarModule,
   ],
   providers: [WorkoutService],
   bootstrap: [AppComponent]

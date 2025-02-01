@@ -200,4 +200,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ])
   ]
 })
-export class AppComponent {}
+export class AppComponent {
+  title = 'health-tracker';
+}

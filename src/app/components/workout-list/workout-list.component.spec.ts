@@ -1,16 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { WorkoutListComponent } from './workout-list.component';
 import { WorkoutService } from '../../services/workout.service';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { User } from '../../models/user.model';
+import { User, Workout } from '../../models/user.model';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 describe('WorkoutListComponent', () => {
   let component: WorkoutListComponent;
   let fixture: ComponentFixture<WorkoutListComponent>;
   let workoutService: jasmine.SpyObj<WorkoutService>;
   let dialog: jasmine.SpyObj<MatDialog>;
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
 
   const mockUsers: User[] = [
     {
@@ -24,22 +28,26 @@ describe('WorkoutListComponent', () => {
   ];
 
   beforeEach(async () => {
-    const workoutServiceSpy = jasmine.createSpyObj('WorkoutService', ['getUsers', 'getWorkoutTypes', 'addWorkoutToExistingUser']);
+    const workoutServiceSpy = jasmine.createSpyObj('WorkoutService', ['getUsers', 'getWorkoutTypes', 'addWorkoutToExistingUser', 'deleteUser', 'deleteWorkout']);
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     workoutServiceSpy.getUsers.and.returnValue(of(mockUsers));
     workoutServiceSpy.getWorkoutTypes.and.returnValue(['Running', 'Cycling']);
 
     await TestBed.configureTestingModule({
-      imports: [WorkoutListComponent, NoopAnimationsModule],
+      imports: [NoopAnimationsModule],
+      declarations: [WorkoutListComponent],
       providers: [
         { provide: WorkoutService, useValue: workoutServiceSpy },
-        { provide: MatDialog, useValue: dialogSpy }
+        { provide: MatDialog, useValue: dialogSpy },
+        { provide: MatSnackBar, useValue: snackBarSpy }
       ]
     }).compileComponents();
 
     workoutService = TestBed.inject(WorkoutService) as jasmine.SpyObj<WorkoutService>;
     dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
   });
 
   beforeEach(() => {
@@ -87,18 +95,31 @@ describe('WorkoutListComponent', () => {
     expect(summary).toBe('Running, Cycling');
   });
 
-  it('should show chart when clicking show chart button', () => {
-    component.showChart(mockUsers[0]);
-    expect(component.selectedUser).toBe(mockUsers[0]);
-  });
-
-  it('should open dialog when adding workout', () => {
+  it('should open dialog when adding workout', fakeAsync(() => {
     dialog.open.and.returnValue({
-      afterClosed: () => of({ type: 'Running', minutes: 30 })
+      afterClosed: () => of({ type: 'Running', minutes: 30, date: new Date() })
     } as any);
 
     component.addWorkout(mockUsers[0]);
+    tick();
     expect(dialog.open).toHaveBeenCalled();
     expect(workoutService.addWorkoutToExistingUser).toHaveBeenCalled();
+  }));
+
+  it('should delete a workout', () => {
+    component.deleteWorkout(1, 0, new Event('click'));
+    expect(workoutService.deleteWorkout).toHaveBeenCalledWith(1, 0);
+    expect(snackBar.open).toHaveBeenCalled();
+  });
+
+  it('should delete a user', () => {
+    component.deleteUser(1, new Event('click'));
+    expect(workoutService.deleteUser).toHaveBeenCalledWith(1);
+    expect(snackBar.open).toHaveBeenCalled();
+  });
+
+  it('should select a user and show chart', () => {
+    component.selectUser(mockUsers[0]);
+    expect(component.selectedUser).toBe(mockUsers[0]);
   });
 });
